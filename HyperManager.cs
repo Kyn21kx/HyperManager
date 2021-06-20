@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace HyperManager {
 	public class HyperManager {
@@ -134,11 +135,11 @@ namespace HyperManager {
 		public static List<Process> FindProcesses(string search) {
 			//If it is only numbers, then you've got an id, else do contains (or a regex, idk)
 			List<Process> results = new List<Process>();
-			int processID;
+			int processId;
 
-			if (int.TryParse(search, out processID)) {
+			if (int.TryParse(search, out processId)) {
 				//Return the process with the given ID
-				results.Add(Process.GetProcessById(processID));
+				results.Add(Process.GetProcessById(processId));
 				return results;
 			}
 
@@ -149,6 +150,39 @@ namespace HyperManager {
 			}
 
 			return results;
+		}
+
+		public static void Kill(string target, bool force, out List<Process> killed) {
+			killed = new List<Process>();
+			int processId;
+			if (int.TryParse(target, out processId)) {
+				killed.Add(Process.GetProcessById(processId));
+			}
+			else {
+				foreach (var p in Process.GetProcesses()) {
+					if (p.ProcessName == target)
+						killed.Add(p);
+				}
+			}
+
+			killed.ForEach((x) => {
+				if (force)
+					x.Kill();
+				else
+					x.CloseMainWindow();
+			});
+		}
+
+		public static float GetCPULevel() {
+			var pc = new PerformanceCounter {
+				CategoryName = "Processor",
+				CounterName = "% Processor Time",
+				InstanceName = "_Total",
+				MachineName = Environment.MachineName
+			};
+			pc.NextValue();
+			Thread.Sleep(1000);
+			return pc.NextValue();
 		}
 
 		public static string FormattedProcessString(Process p) {
