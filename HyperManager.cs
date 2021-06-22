@@ -134,7 +134,7 @@ namespace HyperManager {
 		/// Finds a process either by its PID, or through a regular expression applied on its name
 		/// </summary>
 		/// <param name="search">Query to search (numerical for PID, otherwise RegEx)</param>
-		/// <returns>List of all found processes</returns>
+		/// <returns>A list of all found processes</returns>
 		public static List<Process> FindProcesses(string search) {
 			//If it is only numbers, then you've got an id, else do contains (or a regex, idk)
 			List<Process> results = new List<Process>();
@@ -155,9 +155,16 @@ namespace HyperManager {
 			return results;
 		}
 
+		/// <summary>
+		/// Kills the process(es) with the desired PID or name, then fills a list with the information of the processes killed
+		/// </summary>
+		/// <param name="target">The PID or name of the process to kill (all numeric for PID, otherwise case sensitive name)</param>
+		/// <param name="force">If true, the process will be killed instantly, otherwise, a request will be sent to the main window handle to close it</param>
+		/// <param name="killed">The information about the killed processes will be added to this list</param>
 		public static void Kill(string target, bool force, out List<Process> killed) {
 			killed = new List<Process>();
 			int processId;
+
 			if (int.TryParse(target, out processId)) {
 				killed.Add(Process.GetProcessById(processId));
 			}
@@ -176,6 +183,10 @@ namespace HyperManager {
 			});
 		}
 
+		/// <summary>
+		/// Creates a new performance counter to measure the current CPU usage with a delay of 500 milliseconds to avoid faulty readings
+		/// </summary>
+		/// <returns>The current cpu usage level as a floating point percentage from 0 to 100</returns>
 		public static float GetCPULevel() {
 			try {
 				var pc = new PerformanceCounter {
@@ -190,11 +201,18 @@ namespace HyperManager {
 			}
 			catch (Exception) {
 				//Your performance counters might have been corrupted, make sure to run lodctr /r on C:\Windows\System32 twice to fix it
+				//Note, please make sure to run the command above as an administrator in case you get error #5
 				return float.NaN;
 			}
 		}
 
-		public static float GetCPULevel(PerformanceCounter cachedPC) {
+		/// <summary>
+		/// Returns the value of the provided performance counter (must be well formatted) with a delay of 500 milliseconds to avoid faulty readings
+		/// </summary>
+		/// <param name="cachedPC">The already initialized performance counter</param>
+		/// <returns></returns>
+		public static float ParsePerformanceCounter(PerformanceCounter cachedPC) {
+			if (cachedPC == null) return float.NaN;
 			try {
 				cachedPC.NextValue();
 				Thread.Sleep(500);
@@ -202,10 +220,15 @@ namespace HyperManager {
 			}
 			catch (Exception) {
 				//Your performance counters might have been corrupted, make sure to run lodctr /r on C:\Windows\System32 twice to fix it
+				//Note, please make sure to run the command above as an administrator in case you get error #5
 				return float.NaN;
 			}
 		}
 
+		/// <summary>
+		/// Gets the CPU's information by performing a query to the Management Object Searcher
+		/// </summary>
+		/// <returns>A structure containing the hardware specifications for the user's CPU</returns>
 		public static CpuInformation GetCPUInfo() {			
 			var searcher = new ManagementObjectSearcher("Select * from Win32_Processor");
 			ManagementObjectCollection results = searcher.Get();
@@ -215,6 +238,10 @@ namespace HyperManager {
 			return cpu;
 		}
 
+		/// <summary>
+		/// Creates a new performance counter to measure the current available RAM (in Mega Bytes) with a delay of 500 milliseconds to avoid faulty readings
+		/// </summary>
+		/// <returns>The current available RAM in Mega Bytes as a floating point number</returns>
 		public static float GetAvailableRAM() {
 			try {
 				var pc = new PerformanceCounter {
@@ -228,22 +255,16 @@ namespace HyperManager {
 			}
 			catch (Exception) {
 				//Your performance counters might have been corrupted, make sure to run lodctr /r on C:\Windows\System32 twice to fix it
+				//Note, please make sure to run the command above as an administrator in case you get error #5
 				return float.NaN;
 			}
 		}
 
-		public static float GetAvailableRAM(PerformanceCounter cachedPC) {
-			try {
-				cachedPC.NextValue();
-				Thread.Sleep(500);
-				return cachedPC.NextValue();
-			}
-			catch (Exception) {
-				//Your performance counters might have been corrupted, make sure to run lodctr /r on C:\Windows\System32 twice to fix it
-				return float.NaN;
-			}
-		}
-
+		/// <summary>
+		/// Gets a simple formatted string with a processe's name and Id
+		/// </summary>
+		/// <param name="p">The process to be formatted</param>
+		/// <returns>A process with the format: Name: {Process' name}\tPID: {Process' Id}</returns>
 		public static string FormattedProcessString(Process p) {
 			return $"Name: {p.ProcessName}\tPID: {p.Id}";
 		}

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Text;
-using System.Linq;
 using System.Management;
 using System.Reflection;
 
 namespace HyperManager {
 	public struct CpuInformation {
 
+		/// <summary>
+		/// The name as given by the processor's manufacturer
+		/// </summary>
 		public string Name { get; private set; }
 		
 		public uint NumberOfCores { get; private set; }
