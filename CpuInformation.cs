@@ -45,16 +45,6 @@ namespace HyperManager {
 			return result;
 		}
 
-		private static string[] GetNamesForProperties() {
-			PropertyInfo[] properties = typeof(CpuInformation).GetProperties();
-			string[] names = new string[properties.Length];
-			
-			for (int i = 0; i < properties.Length; i++) {
-				names[i] = properties[i].Name;
-			}
-			return names;
-		}
-
 		public override string ToString() {
 			StringBuilder result = new StringBuilder();
 			PropertyInfo[] properties = typeof(CpuInformation).GetProperties();
