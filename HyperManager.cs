@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Text;
 using System.Threading;
+using System.Management;
+using System.Linq;
 
 namespace HyperManager {
 	public class HyperManager {
-		
+
 		#region WIN32 API Definitions
 
 		[StructLayout(LayoutKind.Sequential)]
@@ -174,15 +177,71 @@ namespace HyperManager {
 		}
 
 		public static float GetCPULevel() {
-			var pc = new PerformanceCounter {
-				CategoryName = "Processor",
-				CounterName = "% Processor Time",
-				InstanceName = "_Total",
-				MachineName = Environment.MachineName
-			};
-			pc.NextValue();
-			Thread.Sleep(1000);
-			return pc.NextValue();
+			try {
+				var pc = new PerformanceCounter {
+					CategoryName = "Processor",
+					CounterName = "% Processor Time",
+					InstanceName = "_Total",
+					MachineName = Environment.MachineName
+				};
+				pc.NextValue();
+				Thread.Sleep(500);
+				return pc.NextValue();
+			}
+			catch (Exception) {
+				//Your performance counters might have been corrupted, make sure to run lodctr /r on C:\Windows\System32 twice to fix it
+				return float.NaN;
+			}
+		}
+
+		public static float GetCPULevel(PerformanceCounter cachedPC) {
+			try {
+				cachedPC.NextValue();
+				Thread.Sleep(500);
+				return cachedPC.NextValue();
+			}
+			catch (Exception) {
+				//Your performance counters might have been corrupted, make sure to run lodctr /r on C:\Windows\System32 twice to fix it
+				return float.NaN;
+			}
+		}
+
+		public static CpuInformation GetCPUInfo() {			
+			var searcher = new ManagementObjectSearcher("Select * from Win32_Processor");
+			ManagementObjectCollection results = searcher.Get();
+			var first = results.OfType<ManagementObject>().FirstOrDefault();
+			
+			CpuInformation cpu = CpuInformation.ParseProperties(first);
+			return cpu;
+		}
+
+		public static float GetAvailableRAM() {
+			try {
+				var pc = new PerformanceCounter {
+					CategoryName = "Memory",
+					CounterName = "Available MBytes",
+					MachineName = Environment.MachineName
+				};
+				pc.NextValue();
+				Thread.Sleep(500);
+				return pc.NextValue();
+			}
+			catch (Exception) {
+				//Your performance counters might have been corrupted, make sure to run lodctr /r on C:\Windows\System32 twice to fix it
+				return float.NaN;
+			}
+		}
+
+		public static float GetAvailableRAM(PerformanceCounter cachedPC) {
+			try {
+				cachedPC.NextValue();
+				Thread.Sleep(500);
+				return cachedPC.NextValue();
+			}
+			catch (Exception) {
+				//Your performance counters might have been corrupted, make sure to run lodctr /r on C:\Windows\System32 twice to fix it
+				return float.NaN;
+			}
 		}
 
 		public static string FormattedProcessString(Process p) {

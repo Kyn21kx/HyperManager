@@ -12,8 +12,7 @@ namespace HyperManager {
 			FINDLOCKERS,
 			KILL,
 			FINDPROCESSES,
-			INFOCPU,
-			INFORAM
+			PERFORMANCE
 		}
 
 		static void Main(string[] args) {
@@ -96,9 +95,24 @@ namespace HyperManager {
 					}
 					break;
 
-				case Commands.INFOCPU:
+				case Commands.PERFORMANCE:
+					Console.WriteLine("***********************");
+					Console.WriteLine("Memory Information:");
+					float availableRAM = HyperManager.GetAvailableRAM();
+					Console.WriteLine($"Available RAM: {availableRAM}MB");
+					Console.WriteLine("***********************");
+					Console.WriteLine("CPU Information:");
+					
+					//General hardware info
+					CpuInformation cpuInfo = HyperManager.GetCPUInfo();
+					Console.WriteLine(cpuInfo.ToString());
+
+					//Usage level
+					Console.WriteLine("Calculating usage level...");
 					float usage = HyperManager.GetCPULevel();
-					Console.WriteLine($"CPU Information:\nUsage: {usage}%");
+					Console.WriteLine($"Usage: {usage}%");
+					
+					Console.WriteLine("***********************");
 					break;
 			}
 		}
