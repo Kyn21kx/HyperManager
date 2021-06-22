@@ -35,12 +35,12 @@ namespace HyperManager {
 		}
 
 		public static CpuInformation ParseProperties(ManagementObject managementObject) {
-			string[] names = GetNamesForProperties();
+			PropertyInfo[] internalProperties = typeof(CpuInformation).GetProperties();
 			CpuInformation result = new CpuInformation();
 
-			for (int i = 0; i < names.Length; i++) {
-				object value = managementObject.Properties[names[i]].Value;
-				result.SetMember(names[i], value);
+			for (int i = 0; i < internalProperties.Length; i++) {
+				object value = managementObject.Properties[internalProperties[i].Name].Value;
+				result.SetMember(internalProperties[i].Name, value);
 			}
 			return result;
 		}
