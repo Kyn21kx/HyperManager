@@ -20,8 +20,8 @@ namespace HyperManager.DTOs {
 		public IParseable SetFromCommand(CommandBuilder command) {
 			//Check the arguments
 			int argc = command.ArgsCount;
-
-			if (argc < 2) {
+			this.type = FindType.Process;
+			if (argc < 1) {
 				throw new Exception("Not enough arguments found for Find operation!\nRun with: Help Find");
 			}
 

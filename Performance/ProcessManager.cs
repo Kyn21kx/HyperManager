@@ -109,14 +109,15 @@ namespace HyperManager {
 			int processId;
 			killCount = 0;
 			if (int.TryParse(target, out processId)) {
-				killCount++;
 				Process targetP = Process.GetProcessById(processId);
 				KillAndLog(targetP, force);
+				killCount++;
 				return;
 			}
 
 			List<Process> targetProcesses = FindProcesses(target);
 			foreach (var p in targetProcesses) {
+				killCount++;
 				KillAndLog(p, force);
 			}
 		}
