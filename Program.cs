@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HyperManager.UI;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,15 +21,14 @@ namespace HyperManager {
 				Console.WriteLine("Help: HyperManager Help");
 				return;
 			}
-
-			string selection = args[0];
-			Commands cmd;
-
-			if (!Enum.TryParse(selection.ToUpper(), out cmd)) {
-				Console.WriteLine("Help: HyperManager Help");
-				return;
+			try {
+				CommandReader reader = new CommandReader(args);
+				reader.Execute();
 			}
-
+			catch(Exception err) {
+				Console.WriteLine($"[Error]: {err.Message}");
+			}
+			/*
 			switch (cmd) {
 				case Commands.FINDLOCKERS:
 					if (args.Length < 2) {
@@ -36,40 +36,11 @@ namespace HyperManager {
 						break;
 					}
 
-					List<Process> blockers = HyperManager.FindLockers(args[1]);
-
-					if (blockers.Count == 0) {
-						Console.WriteLine("There are no processes locking this file!");
-						break;
-					}
-
-					Console.WriteLine($"There are {blockers.Count} processes blocking the file/directory: {args[1]}");
-
-					for (int i = 0; i < blockers.Count; i++) {
-						string info = HyperManager.FormattedProcessString(blockers[i]);
-						Console.WriteLine(info);
-					}
+					
 					break;
 
 				case Commands.FINDPROCESSES:
-					if (args.Length < 2) {
-						Console.WriteLine("Please provide a search string");
-						break;
-					}
-
-					List<Process> foundProcesses = HyperManager.FindProcesses(args[1]);
-
-					if (foundProcesses.Count == 0) {
-						Console.WriteLine("There were no results for your search...");
-						break;
-					}
-
-					Console.WriteLine($"Found {foundProcesses.Count} processes that match your search: {args[1]}");
-
-					for (int i = 0; i < foundProcesses.Count; i++) {
-						string info = HyperManager.FormattedProcessString(foundProcesses[i]);
-						Console.WriteLine(info);
-					}
+					
 					break;
 
 				case Commands.KILL:
@@ -96,25 +67,9 @@ namespace HyperManager {
 					break;
 
 				case Commands.PERFORMANCE:
-					Console.WriteLine("***********************");
-					Console.WriteLine("Memory Information:");
-					float availableRAM = HyperManager.GetAvailableRAM();
-					Console.WriteLine($"Available RAM: {availableRAM}MB");
-					Console.WriteLine("***********************");
-					Console.WriteLine("CPU Information:");
 					
-					//General hardware info
-					CpuInformation cpuInfo = HyperManager.GetCPUInfo();
-					Console.WriteLine(cpuInfo.ToString());
-
-					//Usage level
-					Console.WriteLine("Calculating usage level...");
-					float usage = HyperManager.GetCPULevel();
-					Console.WriteLine($"Usage: {usage}%");
-					
-					Console.WriteLine("***********************");
-					break;
-			}
+					break;			
+			}*/
 		}
 
 		private static bool CheckCommandIgnoreCase(string command, string[] collection) {
@@ -123,6 +78,10 @@ namespace HyperManager {
 					return true;
 			}
 			return false;
+		}
+
+		private static void Help() {
+
 		}
 
 	}

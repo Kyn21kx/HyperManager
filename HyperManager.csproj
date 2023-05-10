@@ -44,10 +44,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CpuInformation.cs" />
-    <Compile Include="HyperManager.cs" />
+    <Compile Include="Definitions\Win32Definitions.cs" />
+    <Compile Include="DTOs\FindData.cs" />
+    <Compile Include="DTOs\CommandParser.cs" />
+    <Compile Include="DTOs\HelpData.cs" />
+    <Compile Include="DTOs\IParseable.cs" />
+    <Compile Include="DTOs\KillData.cs" />
+    <Compile Include="DTOs\PerformanceData.cs" />
+    <Compile Include="Performance\CpuInformation.cs" />
+    <Compile Include="Performance\PerformanceManager.cs" />
+    <Compile Include="Performance\ProcessManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\OperationService.cs" />
+    <Compile Include="UI\CommandBuilder.cs" />
+    <Compile Include="UI\CommandReader.cs" />
+    <Compile Include="UI\Operation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
